@@ -1,0 +1,46 @@
+{
+  "skill_name": "docs-organization",
+  "evals": [
+    {
+      "id": 0,
+      "prompt": "I'm starting a new Next.js app with a Postgres backend and Vercel deployment. It'll have an API layer, maybe 20-30 source files to start. How should I organize my docs?",
+      "expected_output": "Recommends medium project template, suggests CLAUDE.md + docs/ with reference/ and possibly plans/. Explains what goes in CLAUDE.md vs extracted docs.",
+      "files": [],
+      "assertions": [
+        "Recommends medium project template (not small or large)",
+        "Provides CLAUDE.md size guidance (under 250 lines)",
+        "Includes concrete directory structure",
+        "Explains what belongs in CLAUDE.md vs extracted docs",
+        "Includes document metadata frontmatter convention",
+        "Shows growth trajectory over time"
+      ]
+    },
+    {
+      "id": 1,
+      "prompt": "My CLAUDE.md is 800 lines long and keeps growing. It has the full API endpoint table (40 endpoints), deployment procedures, a changelog, and architecture notes all in one file. Help me slim it down.",
+      "expected_output": "Identifies what to extract (API table → reference/, deploy procedures → runbooks/, changelog → product/). Provides a slimmed CLAUDE.md outline under 250 lines with a doc index table.",
+      "files": ["/Users/zning/LocalCodes/docs-organization-workspace/fixtures/bloated-claude.md"],
+      "assertions": [
+        "Identifies extractable sections (API, deploy, changelog, schema)",
+        "Proposes target locations for each extraction",
+        "Slimmed CLAUDE.md under 250 lines",
+        "Slimmed CLAUDE.md includes documentation index table",
+        "Uses document metadata convention"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "I have 15 markdown files all dumped in a flat docs/ folder. Some are design specs from months ago, some are current API docs, there's a deploy guide, two research notes, and a few files I'm not sure are still relevant. Help me reorganize this mess.",
+      "expected_output": "Classifies each doc by audience + freshness, proposes directory structure, provides migration steps, suggests archiving outdated docs.",
+      "files": ["/Users/zning/LocalCodes/docs-organization-workspace/fixtures/flat-docs-listing.txt"],
+      "assertions": [
+        "Classifies each of the 15 files",
+        "Proposes subdirectories (reference, design, research, etc.)",
+        "Identifies archivable docs",
+        "Provides migration steps or commands",
+        "Includes metadata frontmatter templates",
+        "Includes CLAUDE.md doc index update"
+      ]
+    }
+  ]
+}
