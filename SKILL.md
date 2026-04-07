@@ -1,17 +1,15 @@
 ---
 name: docs-organization
 description: >-
-  Organize project documentation by size, audience, and freshness. Use this skill whenever
-  the user wants to set up docs for a new project, restructure existing documentation,
-  slim down a bloated CLAUDE.md/AGENTS.md, decide where a new doc should live, or asks
-  about documentation best practices. Also trigger when you notice CLAUDE.md exceeding
-  ~250 lines, when docs are duplicated across files, or when the user says things like
-  "where should I put this doc", "my docs are a mess", "reorganize docs", or
-  "set up documentation structure".
-  Triggers on "organize docs", "reorganize documentation", "slim CLAUDE.md",
-  "AGENTS.md too long", "where to put docs", "docs structure", "doc best practices",
-  "set up documentation", "docs are messy", "flatten docs", "doc migration".
-version: 1.0.0
+  Organize project documentation by size, audience, and freshness. Trigger when
+  setting up docs for a new project, restructuring existing documentation, slimming
+  a bloated CLAUDE.md/AGENTS.md, deciding where a doc should live, or on doc best
+  practices questions. Also trigger when CLAUDE.md exceeds ~250 lines or docs are
+  duplicated across files.
+  Triggers on: organize docs, reorganize documentation, slim CLAUDE.md, AGENTS.md
+  too long, where to put docs, docs structure, doc best practices, set up
+  documentation, docs are messy, flatten docs, doc migration.
+version: 1.1.0
 metadata:
   author: zning1994
   openclaw:
@@ -36,6 +34,24 @@ Poor doc organization creates three problems that compound over time:
 3. **Lost docs** — flat directories with 20+ files make everything hard to find
 
 The fix is simple: organize by who reads it and whether it stays current.
+
+## Step 0: Root-Level Noise Audit
+
+Before touching docs, clean non-documentation clutter from the project root.
+Root-level noise (screenshots, recordings, debug logs, AI chat exports) is often
+the biggest source of visual chaos — and it has nothing to do with documentation structure.
+
+Run `ls | wc -l` and capture the count. Then identify and relocate:
+
+| What to look for | Where it goes |
+|-----------------|---------------|
+| Screenshots, recordings (`.png`, `.mov`, `.mp4`) | `archive/media/` or `screenshots/` if curated |
+| Debug/build logs (`*.log`, `firebase-debug.log`) | `archive/` or delete |
+| AI chat exports, temp markdown dumps | `archive/` or delete |
+| One-off config experiments | `archive/` or delete |
+
+Do this first — it dramatically reduces root-level item count and makes the real
+structure visible before you start reorganizing docs.
 
 ## Step 1: Assess Project Size
 
@@ -100,6 +116,42 @@ project/
     ├── decisions/     # Architecture Decision Records (ADRs)
     └── archive/       # Superseded docs, old logs, historical patches
 ```
+
+### Multi-Repo / Monorepo Workspace
+
+An umbrella directory containing multiple independent repos (often not a git repo itself).
+The key rule: **umbrella-level docs are for cross-repo concerns only**.
+
+```
+workspace/                          # NOT a git repo
+├── CLAUDE.md                       # Repo map + cross-repo conventions + doc index
+├── docker-compose.yml              # Cross-repo orchestration (lives at root)
+├── .env / .env.example             # Shared secrets (lives at root)
+│
+├── repo-a/                         # Independent git repo
+├── repo-b/                         # Independent git repo
+│
+├── deploy/                         # Cross-repo: nginx, infra configs, deploy scripts
+├── scripts/                        # Cross-repo: shared tooling
+├── tools/                          # Cross-repo: shared CLI utilities
+│
+├── docs/                           # Cross-repo documentation ONLY
+│   ├── design/                     #   System-wide architecture specs
+│   ├── research/                   #   Cross-cutting investigations
+│   ├── runbooks/                   #   Deploy, ops, incident response
+│   └── plans/                      #   Cross-repo implementation plans
+│
+├── screenshots/                    # Curated product screenshots (if needed)
+└── archive/                        # Superseded docs + one-off media
+    ├── media/                      #   Old screenshots, recordings
+    └── docs/                       #   Outdated documents
+```
+
+Key differences from single-repo Large template:
+- Repo-specific docs stay **inside each repo** (e.g., `repo-a/docs/`)
+- Umbrella `docs/` only holds docs that span multiple repos
+- Orchestration files (`docker-compose.yml`, `.env`) live at workspace root
+- `deploy/` holds all infra/nginx configs — don't scatter them in root
 
 ## Step 3: Apply the Core Principles
 
@@ -193,20 +245,26 @@ last_reviewed: YYYY-MM-DD
 | Chat logs in `docs/` | Not documentation | Move to `archive/` or delete |
 | "Always update these 4 files" rule | Creates busywork and drift | "Update the one canonical source" |
 | Empty directories "for later" | Confusing, no content to navigate | Create directories when you have content |
+| Flat `archive/` dumping ground | Archive itself becomes a junk drawer | Use `archive/media/` for images/video, `archive/docs/` for old text |
 
 ## Migration Checklist
 
 When reorganizing existing docs:
 
-1. **Measure**: Count lines in CLAUDE.md, count files in `docs/`, identify duplicated facts
-2. **Classify**: For each doc, determine audience + freshness status
-3. **Create structure**: Make only the directories you need right now
-4. **Move files**: Relocate docs to their new homes
-5. **Extract from CLAUDE.md**: Pull reference tables, procedures, and specs into dedicated files
-6. **Add doc index**: Update CLAUDE.md with a table pointing to where things moved
-7. **Add metadata**: Put frontmatter on each non-trivial doc
-8. **Remove duplicates**: Delete mirrored content, keep only the canonical copy
-9. **Verify links**: Make sure cross-references still work
+1. **Snapshot before state**: Run `ls | wc -l` at root and `docs/`. Save the counts for a before/after comparison.
+2. **Root-level noise audit**: Move stray media, logs, and temp files out of root first (see Step 0).
+3. **Measure docs**: Count lines in CLAUDE.md, count files in `docs/`, identify duplicated facts.
+4. **Classify**: For each doc, determine audience + freshness status.
+5. **Create structure**: Make only the directories you need right now.
+6. **Check implicit references before moving**: `rg <filename>` (or `grep -r <filename>`) across the project to find references in `docker-compose.yml`, CI/CD configs, `Makefile`, shell scripts, `.gitignore`, etc. Moving a file that is referenced by a config will cause silent runtime failures.
+7. **Move files**: Relocate docs to their new homes.
+8. **Update implicit references**: Fix all paths found in step 6 (docker volume mounts, script paths, etc.).
+9. **Extract from CLAUDE.md**: Pull reference tables, procedures, and specs into dedicated files.
+10. **Add doc index**: Update CLAUDE.md with a table pointing to where things moved.
+11. **Add metadata**: Put frontmatter on each non-trivial doc.
+12. **Remove duplicates**: Delete mirrored content, keep only the canonical copy.
+13. **Verify links**: Make sure markdown cross-references still work.
+14. **Show before/after**: Compare root item count before vs. after. This validates the effort and gives the user a tangible result.
 
 ## Example: CLAUDE.md Doc Index
 
