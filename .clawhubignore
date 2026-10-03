@@ -15,3 +15,6 @@ docs-organization-workspace/
 # Claude Code marketplace scaffolding (not needed by ClawHub)
 .claude-plugin/
 skills/
+
+brainharness-docs.skill
+brainharness-docs-workspace/
