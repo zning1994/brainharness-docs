@@ -9,7 +9,7 @@ description: >-
   Triggers on: organize docs, reorganize documentation, slim CLAUDE.md, AGENTS.md
   too long, where to put docs, docs structure, doc best practices, set up
   documentation, docs are messy, flatten docs, doc migration.
-version: 1.2.0
+version: 1.2.1
 metadata:
   author: zning1994
   openclaw:

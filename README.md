@@ -130,3 +130,9 @@ Lessons learned from reorganizing [ai-personal-system](https://github.com/zning1
 ## License
 
 [MIT](LICENSE)
+
+## Codex and OpenAI plugins
+
+The root `plugin.json` provides a portable package using the same skill source as Claude. Once the repository marketplace is available, install with `codex plugin add brainharness-docs@brainharness`. This plugin is not yet listed in the public ChatGPT plugin directory.
+
+When creating an upload archive, materialize symlinks inside `skills/brainharness-docs/` and include all referenced files.

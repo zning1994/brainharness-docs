@@ -1,4 +1,5 @@
 {
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "brainharness-docs",
   "version": "1.2.1",
   "description": "Organize project documentation by size, audience, and freshness. Slim bloated CLAUDE.md/AGENTS.md and decide where docs should live.",
@@ -15,5 +16,18 @@
     "claude-md",
     "agents-md",
     "project-structure"
-  ]
+  ],
+  "extensions": {
+    "com.openai": {
+      "interface": {
+        "displayName": "BrainHarness Docs",
+        "shortDescription": "Organize project documentation by size, audience, and freshness. Slim bloated CLAUDE.md/AGENTS.md and decide where docs should live.",
+        "developerName": "zning1994",
+        "category": "Productivity",
+        "defaultPrompt": [
+          "Use brainharness-docs to help with my task."
+        ]
+      }
+    }
+  }
 }
